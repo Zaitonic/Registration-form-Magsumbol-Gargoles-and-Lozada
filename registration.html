@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration Form</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #3498db;
+            --light: rgba(255, 255, 255, 0.92);
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --error: #e74c3c;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: url('https://i.pinimg.com/originals/9e/19/23/9e19239b4a76b90e049ca0b9ae012d89.png') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 950px;
+            width: 100%;
+            background-color: var(--light);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            animation: fadeIn 0.8s ease-out;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-5px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 35px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 18px;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-container {
+            padding: 45px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px 18px;
+            border: 2px solid #e1e5ee;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: var(--transition);
+            outline: none;
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--dark);
+        }
+
+        .form-control:focus {
+            border-color: var(--accent);
+            background: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.25);
+        }
+
+        .form-control.error {
+            border-color: var(--error);
+            animation: shake 0.5s;
+            box-shadow: 0 6px 15px rgba(231, 76, 60, 0.2);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        .form-control.success {
+            border-color: var(--success);
+            box-shadow: 0 6px 15px rgba(39, 174, 96, 0.2);
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 14px;
+            margin-top: 8px;
+            position: absolute;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: var(--transition);
+        }
+
+        .form-control.error + .error-message {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 25px;
+            margin-top: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .radio-option:hover {
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .radio-option input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 30px 0;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(52, 152, 219, 0.05);
+            transition: var(--transition);
+        }
+
+        .checkbox-container:hover {
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .checkbox-container input {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+        }
+
+        .checkbox-container label {
+            margin-bottom: 0;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .age-display {
+            margin-top: 10px;
+            font-size: 15px;
+            color: var(--accent);
+            font-weight: 600;
+            transition: var(--transition);
+            padding: 10px 15px;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            display: inline-block;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 18px 32px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 1px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.7s;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:active {
+            transform: translateY(-2px);
+        }
+
+        .success-message {
+            opacity: 0;
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.15) 0%, rgba(46, 204, 113, 0.1) 100%);
+            color: var(--success);
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 500;
+            border: 1px solid rgba(39, 174, 96, 0.3);
+            transform: translateY(10px);
+            transition: var(--transition);
+        }
+
+        .success-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 15px;
+            }
+
+            .form-container {
+                padding: 30px;
+            }
+        }
+
+        .form-section-title {
+            grid-column: 1 / -1;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 25px 0 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(52, 152, 219, 0.3);
+            color: var(--primary);
+            position: relative;
+        }
+
+        .form-section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 80px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 3px;
+        }
+        
+        .course-select-container {
+            position: relative;
+        }
+        
+        .course-select-container::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            right: 18px;
+            transform: translateY(-50%);
+            color: var(--accent);
+            pointer-events: none;
+            font-size: 14px;
+        }
+        
+        .form-control.select {
+            appearance: none;
+            cursor: pointer;
+        }
+        
+        .form-control.select option {
+            padding: 12px;
+        }
+        
+        .icon-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .form-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent) 0%, #2980b9 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .info-text {
+            grid-column: 1 / -1;
+            text-align: center;
+            font-size: 16px;
+            color: #7f8c8d;
+            margin: 10px 0 30px;
+            padding: 15px;
+            background: rgba(52, 152, 219, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon-container">
+                <div class="form-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+            </div>
+            <h1>Student Registration</h1>
+            <p>Please complete the form below to register as a student</p>
+        </div>
+        
+        <div class="form-container">
+            <form id="registrationForm">
+                <div class="form-grid">
+                    <div class="info-text">
+                        <i class="fas fa-info-circle"></i> Please fill out all required fields accurately. Your information will be kept secure.
+                    </div>
+                    
+                    <div class="form-section-title">Personal Information</div>
+                    
+                    <div class="form-group">
+                        <label for="surname"><i class="fas fa-user"></i> Surname</label>
+                        <input type="text" id="surname" name="surname" class="form-control" placeholder="Enter your surname" required>
+                        <div class="error-message">Surname is required</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="firstName"><i class="fas fa-user"></i> First Name</label>
+                        <input type="text" id="firstName" name="firstName" class="form-control" placeholder="Enter your first name" required>
+                        <div class="error-message">First name is required</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="middleName"><i class="fas fa-user"></i> Middle Name</label>
+                        <input type="text" id="middleName" name="middleName" class="form-control" placeholder="Enter your middle name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone"><i class="fas fa-phone"></i> Contact Number</label>
+                        <input type="tel" id="phone" name="phone" class="form-control" placeholder="Enter your phone number" required maxlength="11">
+                        <div class="error-message">Valid 11-digit phone number is required</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="birthdate"><i class="fas fa-birthday-cake"></i> Date of Birth</label>
+                        <input type="date" id="birthdate" name="birthdate" class="form-control" required>
+                        <div class="age-display" id="ageDisplay" style="display: none;"></div>
+                        <div class="error-message">Date of birth is required</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-venus-mars"></i> Gender</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="male" name="gender" value="male" required>
+                                <label for="male">Male</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="female" name="gender" value="female">
+                                <label for="female">Female</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="other" name="gender" value="other">
+                                <label for="other">Other</label>
+                            </div>
+                        </div>
+                        <div class="error-message">Please select your gender</div>
+                    </div>
+                    
+                    <div class="form-section-title">Academic Information</div>
+                    
+                    <div class="form-group">
+                        <label for="studentId"><i class="fas fa-id-card"></i> Student Number</label>
+                        <input type="text" id="studentId" name="studentId" class="form-control" placeholder="Enter your student number" required>
+                        <div class="error-message">Student number is required</div>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label for="course"><i class="fas fa-graduation-cap"></i> Select Your Course</label>
+                        <div class="course-select-container">
+                            <select id="course" name="course" class="form-control select" required>
+                                <option value="">-- Select a Course --</option>
+                                <option value="Bachelor of Science in Technology">Bachelor of Science in Technology</option>
+                                <option value="Bachelor of Science in Human Resource Management">Bachelor of Science in Human Resource Management</option>
+                                <option value="Education Major in TLE">Education Major in TLE</option>
+                                <option value="Education Major in ICT">Education Major in ICT</option>
+                                <option value="Education Major in Science">Education Major in Science</option>
+                                <option value="Education General Academic">Education General Academic</option>
+                            </select>
+                        </div>
+                        <div class="error-message">Please select your course</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="yearLevel"><i class="fas fa-calendar-alt"></i> Year Level</label>
+                        <select id="yearLevel" name="yearLevel" class="form-control select" required>
+                            <option value="">Select Year Level</option>
+                            <option value="1">1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                            <option value="4">4th Year</option>
+                        </select>
+                        <div class="error-message">Year level is required</div>
+                    </div>
+                    
+                    <div class="checkbox-container full-width">
+                        <input type="checkbox" id="agree" name="agree" required>
+                        <label for="agree">I agree to the terms and conditions and acknowledge the privacy policy</label>
+                        <div class="error-message">You must agree to the terms and conditions</div>
+                    </div>
+                    
+                    <div class="full-width">
+                        <button type="submit" class="btn">
+                            <i class="fas fa-paper-plane"></i> Submit Registration
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle"></i> Registration submitted successfully! You will receive a confirmation email shortly.
+            </div>
+            
+            <div class="copyright">
+                © Trio Gods: Magsumbol, Gargoles and Lozada
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            function validateField(field) {
+                const $field = $(field);
+                const errorMessage = $field.next('.error-message');
+                
+                if ($field.val().trim() === '') {
+                    $field.removeClass('success').addClass('error');
+                    errorMessage.text($field.attr('placeholder') + ' is required');
+                } else {
+                    $field.removeClass('error').addClass('success');
+                    errorMessage.text('');
+                }
+            }
+
+            $('.form-control[required]').each(function() {
+                const field = $(this);
+                
+                field.on('keyup', function() {
+                    validateField(this);
+                });
+                
+                field.on('blur', function() {
+                    validateField(this);
+                });
+            });
+
+            $('#phone').on('keyup blur', function() {
+                const $this = $(this);
+                const errorMessage = $this.next('.error-message');
+                
+                if ($this.val().trim() === '') {
+                    $this.removeClass('success').addClass('error');
+                    errorMessage.text('Phone number is required');
+                } else if ($this.val().length !== 11 || !/^\d+$/.test($this.val())) {
+                    $this.removeClass('success').addClass('error');
+                    errorMessage.text('Valid 11-digit phone number is required (numbers only)');
+                } else {
+                    $this.removeClass('error').addClass('success');
+                    errorMessage.text('');
+                }
+            });
+
+            $('#registrationForm').on('submit', function(e) {
+                e.preventDefault();
+                let isValid = true;
+                
+                $('.form-control[required]').each(function() {
+                    validateField(this);
+                    if ($(this).hasClass('error')) {
+                        isValid = false;
+                    }
+                });
+                
+                if ($('#phone').val().length !== 11 || !/^\d+$/.test($('#phone').val())) {
+                    $('#phone').addClass('error');
+                    isValid = false;
+                }
+                
+                const courseSelected = $('#course').val();
+                if (!courseSelected) {
+                    $('#course').addClass('error');
+                    isValid = false;
+                } else {
+                    $('#course').removeClass('error').addClass('success');
+                }
+                
+                const genderSelected = $('input[name="gender"]:checked').length > 0;
+                if (!genderSelected) {
+                    $('.radio-group').parent().find('.error-message').text('Please select your gender');
+                    isValid = false;
+                } else {
+                    $('.radio-group').parent().find('.error-message').text('');
+                }
+                
+                if (!$('#agree').is(':checked')) {
+                    $('.checkbox-container').find('.error-message').text('You must agree to the terms and conditions');
+                    isValid = false;
+                } else {
+                    $('.checkbox-container').find('.error-message').text('');
+                }
+                
+                if (isValid) {
+                    $('#successMessage').addClass('show');
+                    
+                    setTimeout(function() {
+                        $('#registrationForm')[0].reset();
+                        $('.form-control').removeClass('success error');
+                        $('#ageDisplay').text('').hide();
+                        $('#successMessage').removeClass('show');
+                    }, 5000);
+                } else {
+                    $('.container').css('animation', 'shake 0.5s');
+                    setTimeout(function() {
+                        $('.container').css('animation', '');
+                    }, 500);
+                }
+            });
+
+            $('#birthdate').on('change', function() {
+                if ($(this).val()) {
+                    const birthDate = new Date($(this).val());
+                    const today = new Date();
+                    let age = today.getFullYear() - birthDate.getFullYear();
+                    const monthDiff = today.getMonth() - birthDate.getMonth();
+                    
+                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                        age--;
+                    }
+                    
+                    $('#ageDisplay').text(`Age: ${age} years`).show();
+                    validateField(this);
+                } else {
+                    $('#ageDisplay').text('').hide();
+                }
+            });
+
+            $('#phone').on('input', function() {
+                $(this).val($(this).val().replace(/\D/g, ''));
+                if ($(this).val().length > 11) {
+                    $(this).val($(this).val().slice(0, 11));
+                }
+            });
+
+            $('.form-control').on('focus', function() {
+                $(this).parent().find('label').css('color', '#3498db');
+            }).on('blur', function() {
+                $(this).parent().find('label').css('color', '#2c3e50');
+            });
+            
+            $('#course, #yearLevel').on('change', function() {
+                if ($(this).val()) {
+                    $(this).removeClass('error').addClass('success');
+                } else {
+                    $(this).removeClass('success').addClass('error');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
