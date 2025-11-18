@@ -154,10 +154,33 @@
             box-shadow: 0 6px 15px rgba(52, 152, 219, 0.25);
         }
 
+        .form-control.inputting {
+            animation: greenGlow 1.5s infinite alternate;
+        }
+
+        @keyframes greenGlow {
+            from {
+                box-shadow: 0 0 5px rgba(39, 174, 96, 0.5);
+                border-color: rgba(39, 174, 96, 0.7);
+            }
+            to {
+                box-shadow: 0 0 15px rgba(39, 174, 96, 0.8);
+                border-color: rgba(39, 174, 96, 1);
+            }
+        }
+
         .form-control.error {
             border-color: var(--error);
-            animation: shake 0.5s;
-            box-shadow: 0 6px 15px rgba(231, 76, 60, 0.2);
+            animation: shake 0.5s, redGlow 1.5s infinite alternate;
+        }
+
+        @keyframes redGlow {
+            from {
+                box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
+            }
+            to {
+                box-shadow: 0 0 15px rgba(231, 76, 60, 0.8);
+            }
         }
 
         @keyframes shake {
@@ -574,8 +597,8 @@
                     
                     <div class="form-group">
                         <label for="studentId"><i class="fas fa-id-card"></i> Student Number</label>
-                        <input type="text" id="studentId" name="studentId" class="form-control" placeholder="Enter your student number" required>
-                        <div class="error-message">Student number is required</div>
+                        <input type="text" id="studentId" name="studentId" class="form-control" placeholder="Enter your student number (numbers only)" required>
+                        <div class="error-message">Student number is required and must contain only numbers</div>
                     </div>
                     
                     <div class="form-group full-width">
@@ -660,6 +683,14 @@
                         $field.removeClass('error').addClass('success');
                         errorMessage.text('');
                     }
+                } else if (fieldId === 'studentId') {
+                    if (!/^\d+$/.test($field.val().trim())) {
+                        $field.removeClass('success').addClass('error');
+                        errorMessage.text('Student number must contain only numbers');
+                    } else {
+                        $field.removeClass('error').addClass('success');
+                        errorMessage.text('');
+                    }
                 } else {
                     $field.removeClass('error').addClass('success');
                     errorMessage.text('');
@@ -670,15 +701,22 @@
                 const field = $(this);
                 
                 field.on('keyup', function() {
+                    $(this).addClass('inputting');
                     validateField(this);
                 });
                 
                 field.on('blur', function() {
+                    $(this).removeClass('inputting');
                     validateField(this);
+                });
+                
+                field.on('focus', function() {
+                    $(this).addClass('inputting');
                 });
             });
 
             $('#middleName').on('keyup blur', function() {
+                $(this).addClass('inputting');
                 validateField(this);
             });
 
@@ -719,6 +757,11 @@
                     isValid = false;
                 }
                 
+                if ($('#studentId').val().trim() !== '' && !/^\d+$/.test($('#studentId').val().trim())) {
+                    $('#studentId').addClass('error');
+                    isValid = false;
+                }
+                
                 const courseSelected = $('#course').val();
                 if (!courseSelected) {
                     $('#course').addClass('error');
@@ -747,7 +790,7 @@
                     
                     setTimeout(function() {
                         $('#registrationForm')[0].reset();
-                        $('.form-control').removeClass('success error');
+                        $('.form-control').removeClass('success error inputting');
                         $('#ageDisplay').text('').hide();
                         $('#successMessage').removeClass('show');
                     }, 5000);
@@ -783,6 +826,10 @@
                     $(this).val($(this).val().slice(0, 11));
                 }
             });
+            
+            $('#studentId').on('input', function() {
+                $(this).val($(this).val().replace(/\D/g, ''));
+            });
 
             $('#surname, #firstName, #middleName').on('input', function() {
                 $(this).val($(this).val().replace(/[0-9]/g, ''));
@@ -790,8 +837,10 @@
 
             $('.form-control').on('focus', function() {
                 $(this).parent().find('label').css('color', '#3498db');
+                $(this).addClass('inputting');
             }).on('blur', function() {
                 $(this).parent().find('label').css('color', '#2c3e50');
+                $(this).removeClass('inputting');
             });
             
             $('#course, #yearLevel').on('change', function() {
